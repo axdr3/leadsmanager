@@ -15,6 +15,7 @@ pytest-cov = "*"
 flake8 = "*"
 black = "==19.10b0"
 isort = "*"
+django-cors-headers = "*"
 
 [requires]
 python_version = "3.8"

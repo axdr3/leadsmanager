@@ -25,7 +25,7 @@ function Header(props) {
     <ul className="navbar-nav ml-auto d-flex flex-row">
       <li className="nav-item text-light">
         <small>Hello,</small>
-        <br /> {user.username}
+        <br /> {user ? user.username : "Could not load username"}
       </li>
       <li className="nav-item">
         <button
@@ -103,7 +103,7 @@ function Header(props) {
             </button>
           </form>
         </div>
-        <div className="ml-auto">{isAuthenticated && user && authLinks}</div>
+        <div className="ml-auto">{isAuthenticated && authLinks}</div>
       </nav>
     </header>
   );
