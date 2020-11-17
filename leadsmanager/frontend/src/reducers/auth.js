@@ -7,10 +7,13 @@ import {
   LOGOUT_SUCCESS,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
+  TOKEN_REFRESH,
+  TOKEN_EXPIRED,
 } from "../actions/types";
 
 const initialState = {
-  token: localStorage.getItem("token"),
+  access_token: localStorage.getItem("access_token"),
+  refresh_token: localStorage.getItem("refresh_token"),
   isAuthenticated: null,
   isLoading: false,
   user: null,
@@ -32,25 +35,39 @@ export default function (state = initialState, action) {
         user: action.payload,
       };
     case LOGIN_SUCCESS:
-    case REGISTER_SUCCESS:
-      localStorage.setItem("token", action.payload.token);
+      localStorage.setItem("access_token", action.payload.access_token);
+      localStorage.setItem("refresh_token", action.payload.refresh_token);
       return {
         ...state,
         ...action.payload,
         isAuthenticated: true,
         isLoading: false,
       };
+    case REGISTER_SUCCESS:
+      return {
+        ...state,
+        isAuthenticated: false,
+      };
     case AUTH_ERROR:
     case LOGOUT_SUCCESS:
     case LOGIN_FAIL:
     case REGISTER_FAIL:
-      localStorage.removeItem("token");
+    case TOKEN_EXPIRED:
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
       return {
         ...state,
-        token: null,
+        access_token: null,
+        refresh_token: null,
         user: null,
         isAuthenticated: false,
         isLoading: false,
+      };
+    case TOKEN_REFRESH:
+      localStorage.setItem("access_token", action.payload.access);
+      return {
+        ...state,
+        access_token: action.payload.access,
       };
     default:
       return state;

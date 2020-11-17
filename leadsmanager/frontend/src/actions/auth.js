@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "../axiosApi";
 import { returnErrors } from "./messages";
 
 import {
@@ -10,6 +10,8 @@ import {
   LOGOUT_SUCCESS,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
+  TOKEN_REFRESH,
+  TOKEN_EXPIRED,
 } from "./types";
 
 // CHECK TOKEN & LOAD USER
@@ -17,10 +19,10 @@ import {
 export const loadUser = () => (dispatch, getState) => {
   // User Loading
   dispatch({ type: USER_LOADING });
-
-  axios
-    .get("/api/auth/user/", tokenConfig(getState))
+  axiosInstance
+    .get("/auth/user/")
     .then((response) => {
+      // console.log(response.data);
       dispatch({
         type: USER_LOADED,
         payload: response.data,
@@ -45,9 +47,10 @@ export const login = (username, password) => (dispatch) => {
   // Request Body
   const body = JSON.stringify({ username, password });
 
-  axios
-    .post("/api/auth/login/", body, config)
+  axiosInstance
+    .post("/auth/login/", body, config)
     .then((response) => {
+      // should return user, access_token, refresh_token
       dispatch({
         type: LOGIN_SUCCESS,
         payload: response.data,
@@ -71,8 +74,8 @@ export const registerUser = ({ username, email, password }) => (dispatch) => {
   // Request Body
   const body = JSON.stringify({ username, email, password });
 
-  axios
-    .post("/api/auth/register/", body, config)
+  axiosInstance
+    .post("/auth/register/", body)
     .then((response) => {
       dispatch({
         type: REGISTER_SUCCESS,
@@ -91,8 +94,8 @@ export const logout = () => (dispatch, getState) => {
   // User Loading
   dispatch({ type: USER_LOADING });
 
-  axios
-    .post("/api/auth/logout/", null, tokenConfig(getState))
+  axiosInstance
+    .post("/auth/logout/", null)
     .then((response) => {
       dispatch({
         type: LOGOUT_SUCCESS,
@@ -104,21 +107,46 @@ export const logout = () => (dispatch, getState) => {
     });
 };
 
+export const refreshToken = () => (dispatch) => {
+  const refresh_token = localStorage.getItem("refresh_token");
+  if (!!refresh_token) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    return axiosInstance
+      .post("/token/refresh/", { refresh: refresh_token })
+      .then((response) => {
+        console.log("refreshing token", response.data);
+        dispatch({ type: TOKEN_REFRESH, payload: response.data }); // refresh token
+        // dispatch(loadUser(response.data.access)); // then reload user
+      })
+      .catch((error) => {
+        dispatch(returnErrors(error.response.data, error.response.status));
+        dispatch({ type: TOKEN_EXPIRED });
+      });
+  }
+};
+
 // Setup config with token - helper function
 
-export const tokenConfig = (getState) => {
-  // Get token from state
-  const token = getState().auth.token;
-  //Headers
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
+// export const tokenConfig = (getState, refreshed_token) => {
+//   // Get token from state
+//   const token = getState().auth.access_token;
+//   //Headers
+//   const config = {
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   };
 
-  // if token add to headers config
-  if (token) {
-    config.headers["Authorization"] = `Token ${token}`;
-  }
-  return config;
-};
+//   console.log(config);
+//   // if token add to headers config
+//   if (refreshed_token) {
+//     config.headers["Authorization"] = `Bearer ${refreshed_token}`;
+//   } else if (token) {
+//     config.headers["Authorization"] = `Bearer ${token}`;
+//   }
+//   return config;
+// };

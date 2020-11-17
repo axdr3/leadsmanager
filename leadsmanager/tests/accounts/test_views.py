@@ -1,26 +1,27 @@
 import pytest
 from rest_framework.test import APIClient
 
-# from  import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
 
-# @pytest.fixture
-# def api_client():
-#     payload = {"email": "test@example.com", "username": "Tão", "password": "test"}
+@pytest.fixture
+@pytest.mark.django_db
+def api_client():
+    payload = {"email": "test@example.com", "username": "Tão", "password": "test"}
 
-#     user = User.objects.create_user(
-#         username=payload["username"],
-#         password=payload["password"],
-#         email=payload["email"],
-#     )
-#     client = APIClient()
-#     refresh = RefreshToken.for_user(user)
-#     client.credentials(HTTP_AUTHORIZATION=f"Token {refresh.access_token}")
+    user = User.objects.create_user(
+        username=payload["username"],
+        password=payload["password"],
+        email=payload["email"],
+    )
+    client = APIClient()
+    refresh = RefreshToken.for_user(user)
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
 
-#     return client
+    return client
 
 
 @pytest.fixture
@@ -61,9 +62,30 @@ def test_login_user(client, regusers):
         data={"username": "Tão", "password": "test"},
         content_type="application/json",
     )
-    access_token = response.json().get("token")
-    print(access_token)
-    api_client.credentials(HTTP_AUTHORIZATION=f"Token {access_token}")
+    access_token = response.json().get("access_token")
+    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
     response = api_client.get("/api/auth/user/", content_type="application/json")
     assert response.status_code == 200
     assert "Tão" in response.data["username"]
+
+
+@pytest.mark.django_db
+def test_user_can_access_protected_view(api_client):
+
+    # should already have header
+    response = api_client.get("/api/auth/user/")
+
+    assert response.status_code == 200
+
+
+# @pytest.mark.django_db
+# def test_logout_and_blacklist(client, test_login_user):
+
+#     api_client = APIClient()
+#     response = api_client.get("/api/auth/user/", content_type="application/json")
+
+#     response = api_client.post(
+#         "/api/auth/logout/", request=response, content_type="application/json"
+#     )
+
+#     assert response.status_code == 205
