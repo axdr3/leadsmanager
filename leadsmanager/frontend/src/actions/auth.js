@@ -20,7 +20,7 @@ export const loadUser = () => (dispatch, getState) => {
   // User Loading
   dispatch({ type: USER_LOADING });
   axiosInstance
-    .get("/auth/user/")
+    .get("/auth/user/", tokenConfig(getState))
     .then((response) => {
       // console.log(response.data);
       dispatch({
@@ -107,46 +107,44 @@ export const logout = () => (dispatch, getState) => {
     });
 };
 
-export const refreshToken = () => (dispatch) => {
-  const refresh_token = localStorage.getItem("refresh_token");
-  if (!!refresh_token) {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    return axiosInstance
-      .post("/token/refresh/", { refresh: refresh_token })
-      .then((response) => {
-        console.log("refreshing token", response.data);
-        dispatch({ type: TOKEN_REFRESH, payload: response.data }); // refresh token
-        // dispatch(loadUser(response.data.access)); // then reload user
-      })
-      .catch((error) => {
-        dispatch(returnErrors(error.response.data, error.response.status));
-        dispatch({ type: TOKEN_EXPIRED });
-      });
-  }
-};
+// export const refreshToken = () => (dispatch) => {
+//   const refresh_token = localStorage.getItem("refresh_token");
+//   if (!!refresh_token) {
+//     const config = {
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     };
+//     return axiosInstance
+//       .post("/token/refresh/", { refresh: refresh_token })
+//       .then((response) => {
+//         console.log("refreshing token", response.data);
+//         dispatch({ type: TOKEN_REFRESH, payload: response.data }); // refresh token
+//         // dispatch(loadUser(response.data.access)); // then reload user
+//       })
+//       .catch((error) => {
+//         dispatch(returnErrors(error.response.data, error.response.status));
+//         dispatch({ type: TOKEN_EXPIRED });
+//       });
+//   }
+// };
 
 // Setup config with token - helper function
 
-// export const tokenConfig = (getState, refreshed_token) => {
-//   // Get token from state
-//   const token = getState().auth.access_token;
-//   //Headers
-//   const config = {
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   };
+export const tokenConfig = (getState) => {
+  // Get token from state
+  const token = getState().auth.access_token;
+  //Headers
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
 
-//   console.log(config);
-//   // if token add to headers config
-//   if (refreshed_token) {
-//     config.headers["Authorization"] = `Bearer ${refreshed_token}`;
-//   } else if (token) {
-//     config.headers["Authorization"] = `Bearer ${token}`;
-//   }
-//   return config;
-// };
+  console.log(config);
+  // if token add to headers config
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+};

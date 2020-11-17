@@ -65,9 +65,11 @@ export default function (state = initialState, action) {
       };
     case TOKEN_REFRESH:
       localStorage.setItem("access_token", action.payload.access);
+      localStorage.setItem("refresh_token", action.payload.refresh);
       return {
         ...state,
         access_token: action.payload.access,
+        refresh_token: action.payload.refresh,
       };
     default:
       return state;
