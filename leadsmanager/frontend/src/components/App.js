@@ -19,9 +19,11 @@ import PrivateRoute from "./common/PrivateRoute";
 import { Provider } from "react-redux";
 import store from "../store";
 import { loadUser } from "../actions/auth";
+import { addInterceptors } from "../axiosApi";
 
 // Alert Options
 
+addInterceptors(store);
 const alertOptions = {
   timeout: 3000,
   position: "middle",
@@ -32,7 +34,6 @@ function App(props) {
   useEffect(() => {
     store.dispatch(loadUser());
   });
-
   return (
     <Provider store={store}>
       <AlertProvider template={AlertTemplate} {...alertOptions}>

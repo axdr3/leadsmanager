@@ -1,5 +1,5 @@
 import { createMessage, returnErrors } from "./messages";
-import axiosInstance from "../axiosApi";
+import { axiosInstance } from "../axiosApi";
 import { tokenConfig } from "./auth";
 import { GET_LEADS, DELETE_LEAD, ADD_LEAD } from "./types";
 
