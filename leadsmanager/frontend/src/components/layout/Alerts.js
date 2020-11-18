@@ -5,8 +5,8 @@ import { useSelector } from "react-redux";
 function Alerts(props) {
   const error = useSelector((state) => state.errors);
   const message = useSelector((state) => state.messages);
-  const alert = props.alert;
 
+  const { alert } = props;
   useEffect(() => {
     // lead input error
     if (error.msg.name) alert.error(`Name: ${error.msg.name.join()}`);
@@ -20,12 +20,14 @@ function Alerts(props) {
       alert.error(`Username: ${error.msg.username.join()}`);
     if (error.msg.password)
       alert.error(`Password: ${error.msg.password.join()}`);
-    // register errors
+  }, [error, alert]);
+
+  useEffect(() => {
     if (message.leadDeleted) alert.success(message.leadDeleted);
     if (message.leadAdded) alert.success(message.leadAdded);
+    // register errors
     if (message.passwordsNotMatch) alert.error(message.passwordsNotMatch);
-  }, [error, message, alert]);
-
+  }, [message, alert]);
   return <React.Fragment></React.Fragment>;
 }
 

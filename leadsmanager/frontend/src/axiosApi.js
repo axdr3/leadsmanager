@@ -1,7 +1,6 @@
 import axios from "axios";
 // import store from "./store";
-import { TOKEN_REFRESH, TOKEN_EXPIRED } from "./actions/types";
-
+import { USER_LOADING, TOKEN_REFRESHED, TOKEN_EXPIRED } from "./actions/types";
 const axiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/",
   timeout: 5000,
@@ -40,21 +39,20 @@ const addInterceptors = (store) => {
           console.log(tokenParts.exp);
 
           if (tokenParts.exp > now) {
+            store.dispatch({ type: USER_LOADING });
             return axiosInstance
               .post("/token/refresh/", { refresh: refreshToken })
               .then((response) => {
                 // localStorage.setItem("access_token", response.data.access);
                 // localStorage.setItem("refresh_token", response.data.refresh);
-                console.log(response.data.refresh);
                 store.dispatch({
-                  type: TOKEN_REFRESH,
+                  type: TOKEN_REFRESHED,
                   payload: { ...response.data, refresh: refreshToken },
                 });
                 axiosInstance.defaults.headers["Authorization"] =
                   "Bearer " + response.data.access;
                 originalRequest.headers["Authorization"] =
                   "Bearer " + response.data.access;
-
                 return axiosInstance(originalRequest); // send original request again
               })
               .catch((err) => {

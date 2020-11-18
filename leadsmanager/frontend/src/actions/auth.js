@@ -10,8 +10,6 @@ import {
   LOGOUT_SUCCESS,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
-  TOKEN_REFRESH,
-  TOKEN_EXPIRED,
 } from "./types";
 
 // CHECK TOKEN & LOAD USER
@@ -28,8 +26,8 @@ export const loadUser = () => (dispatch, getState) => {
         payload: response.data,
       });
     })
-    .catch((err) => {
-      // dispatch(returnErrors(err.response.data, err.response.status));
+    .catch((error) => {
+      dispatch(returnErrors(error.response.data, error.response.status));
       dispatch({ type: AUTH_ERROR });
     });
 };
@@ -56,8 +54,8 @@ export const login = (username, password) => (dispatch) => {
         payload: response.data,
       });
     })
-    .catch((err) => {
-      dispatch(returnErrors(err.response.data, err.response.status));
+    .catch((error) => {
+      dispatch(returnErrors(error.response.data, error.response.status));
       dispatch({ type: LOGIN_FAIL });
     });
 };
@@ -82,8 +80,8 @@ export const registerUser = ({ username, email, password }) => (dispatch) => {
         payload: response.data,
       });
     })
-    .catch((err) => {
-      dispatch(returnErrors(err.response.data, err.response.status));
+    .catch((error) => {
+      dispatch(returnErrors(error.response.data, error.response.status));
       dispatch({ type: REGISTER_FAIL });
     });
 };
@@ -101,33 +99,11 @@ export const logout = () => (dispatch, getState) => {
         type: LOGOUT_SUCCESS,
       });
     })
-    .catch((err) => {
-      dispatch(returnErrors(err.response.data, err.response.status));
+    .catch((error) => {
+      dispatch(returnErrors(error.response.data, error.response.status));
       // dispatch({ type: AUTH_ERROR });
     });
 };
-
-// export const refreshToken = () => (dispatch) => {
-//   const refresh_token = localStorage.getItem("refresh_token");
-//   if (!!refresh_token) {
-//     const config = {
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     };
-//     return axiosInstance
-//       .post("/token/refresh/", { refresh: refresh_token })
-//       .then((response) => {
-//         console.log("refreshing token", response.data);
-//         dispatch({ type: TOKEN_REFRESH, payload: response.data }); // refresh token
-//         // dispatch(loadUser(response.data.access)); // then reload user
-//       })
-//       .catch((error) => {
-//         dispatch(returnErrors(error.response.data, error.response.status));
-//         dispatch({ type: TOKEN_EXPIRED });
-//       });
-//   }
-// };
 
 // Setup config with token - helper function
 

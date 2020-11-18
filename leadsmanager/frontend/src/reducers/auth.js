@@ -7,7 +7,7 @@ import {
   LOGOUT_SUCCESS,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
-  TOKEN_REFRESH,
+  TOKEN_REFRESHED,
   TOKEN_EXPIRED,
 } from "../actions/types";
 
@@ -53,21 +53,20 @@ export default function (state = initialState, action) {
     case LOGIN_FAIL:
     case REGISTER_FAIL:
     case TOKEN_EXPIRED:
-      // localStorage.removeItem("access_token");
-      // localStorage.removeItem("refresh_token");
       return {
         ...state,
         access_token: null,
         refresh_token: null,
       };
-    case TOKEN_REFRESH:
-      console.log(action.payload);
+    case TOKEN_REFRESHED:
       localStorage.setItem("access_token", action.payload.access);
       localStorage.setItem("refresh_token", action.payload.refresh);
       return {
         ...state,
         access_token: action.payload.access,
         refresh_token: action.payload.refresh,
+        isLoading: false,
+        isAuthenticated: true,
       };
     default:
       return state;

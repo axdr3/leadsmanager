@@ -1,6 +1,6 @@
 import React from "react";
 import Form from "./Form";
-import Leads from "./Leads";
+import Leads from "./Leads2";
 
 export default function Dashboard() {
   return (
