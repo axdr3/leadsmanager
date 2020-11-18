@@ -1,58 +1,51 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { getLeads, deleteLead } from "../../actions/leads";
 
-export class Leads extends Component {
-  static propTypes = {
-    leads: PropTypes.array.isRequired,
-    getLeads: PropTypes.func.isRequired,
-    deleteLead: PropTypes.func.isRequired,
-  };
+function Leads(props) {
+  const dispatch = useDispatch();
+  const leads = useSelector((state) => state.leads.leads);
+  useEffect(() => {
+    function dispatchLeads() {
+      dispatch(getLeads());
+    }
+    dispatchLeads();
+  }, [dispatch]);
 
-  componentDidMount() {
-    this.props.getLeads();
-  }
-  render() {
-    return (
-      <React.Fragment>
-        <h2>Leads</h2>
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Message</th>
-              <th></th>
+  return (
+    <React.Fragment>
+      <h2>Leads</h2>
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Message</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {leads.map((lead, index) => (
+            <tr key={lead.id}>
+              <td>{lead.id}</td>
+              <td>{lead.name}</td>
+              <td>{lead.email}</td>
+              <td>{lead.message}</td>
+              <td>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => dispatch(deleteLead(lead.id))}
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {this.props.leads.map((lead, index) => (
-              <tr key={lead.id}>
-                <td>{lead.id}</td>
-                <td>{lead.name}</td>
-                <td>{lead.email}</td>
-                <td>{lead.message}</td>
-                <td>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={this.props.deleteLead.bind(this, lead.id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </React.Fragment>
-    );
-  }
+          ))}
+        </tbody>
+      </table>
+    </React.Fragment>
+  );
 }
 
-const mapStateToProps = (state) => ({
-  leads: state.leads.leads,
-});
-
-export default connect(mapStateToProps, { getLeads, deleteLead })(Leads);
+export default Leads;

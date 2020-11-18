@@ -39,12 +39,13 @@ const addInterceptors = (store) => {
           console.log(tokenParts.exp);
 
           if (tokenParts.exp > now) {
-            store.dispatch({ type: USER_LOADING });
+            // store.dispatch({ type: USER_LOADING });
             return axiosInstance
               .post("/token/refresh/", { refresh: refreshToken })
               .then((response) => {
                 // localStorage.setItem("access_token", response.data.access);
                 // localStorage.setItem("refresh_token", response.data.refresh);
+                console.log("tokenrefresh", response.data);
                 store.dispatch({
                   type: TOKEN_REFRESHED,
                   payload: { ...response.data, refresh: refreshToken },
@@ -55,8 +56,9 @@ const addInterceptors = (store) => {
                   "Bearer " + response.data.access;
                 return axiosInstance(originalRequest); // send original request again
               })
-              .catch((err) => {
-                console.log(err);
+              .catch((error) => {
+                console.log("refresh error", error);
+                return Promise.reject(error);
               });
           } else {
             console.log("Refresh token is expired", tokenParts.exp, now);

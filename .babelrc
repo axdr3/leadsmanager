@@ -4,6 +4,9 @@
 		"@babel/preset-react"
 	],
 	"plugins": [
-		"transform-class-properties"
+		"transform-class-properties",
+		["@babel/transform-runtime", {
+			"regenerator": true
+		}]
 	]
 }

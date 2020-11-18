@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { addLead } from "../../actions/leads";
-import { returnErrors } from "../../actions/messages";
 
 function Form(props) {
   const [name, setName] = useState("");
