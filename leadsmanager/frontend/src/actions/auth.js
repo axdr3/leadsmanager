@@ -93,11 +93,13 @@ export const logout = () => (dispatch, getState) => {
   dispatch({ type: USER_LOADING });
 
   axiosInstance
-    .post("/auth/logout/", null)
+    .post("/auth/logout/", { refresh_token: getState().auth.refresh_token })
     .then((response) => {
+      console.log(response.data);
       dispatch({
         type: LOGOUT_SUCCESS,
       });
+      axiosInstance.defaults.headers["Authorization"] = null;
     })
     .catch((error) => {
       dispatch(returnErrors(error.response.data, error.response.status));

@@ -53,10 +53,14 @@ export default function (state = initialState, action) {
     case LOGIN_FAIL:
     case REGISTER_FAIL:
     case TOKEN_EXPIRED:
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
       return {
         ...state,
         access_token: null,
         refresh_token: null,
+        isAuthenticated: false,
+        isLoading: false,
       };
     case TOKEN_REFRESHED:
       localStorage.setItem("access_token", action.payload.access);

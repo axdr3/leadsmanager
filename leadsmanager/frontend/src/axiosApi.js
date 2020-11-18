@@ -1,6 +1,6 @@
 import axios from "axios";
 // import store from "./store";
-import { USER_LOADING, TOKEN_REFRESHED, TOKEN_EXPIRED } from "./actions/types";
+import { AUTH_ERROR, TOKEN_REFRESHED, TOKEN_EXPIRED } from "./actions/types";
 const axiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/",
   timeout: 5000,
@@ -58,6 +58,7 @@ const addInterceptors = (store) => {
               })
               .catch((error) => {
                 console.log("refresh error", error);
+                store.dispatch({ type: AUTH_ERROR });
                 return Promise.reject(error);
               });
           } else {

@@ -29,7 +29,7 @@ function Header(props) {
       </li>
       <li className="nav-item">
         <button
-          onClick={dispatch(logout)}
+          onClick={() => dispatch(logout())}
           className="nav-link btn btn-info btn-sm text-light"
         >
           Logout

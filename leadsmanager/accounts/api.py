@@ -58,9 +58,12 @@ class LogoutAndBlacklistRefreshTokenForUserView(generics.GenericAPIView):
 
     def post(self, request):
         try:
+            print("1")
             refresh_token = request.data["refresh_token"]
+            print("2", refresh_token)
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
+            print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=str(e))
