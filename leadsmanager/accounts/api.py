@@ -15,10 +15,7 @@ class RegisterAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         user_serializer = UserSerializer(user, context=self.get_serializer_context())
-        # token = AuthToken.objects.create(user=user)[1]
-        return Response(
-            {"user": user_serializer.data}, status=201,
-        )  # deal with token? Redirect to Login page
+        return Response({"user": user_serializer.data}, status=201,)
 
 
 # Login API
@@ -35,6 +32,7 @@ class LoginAPI(generics.GenericAPIView):
             refresh.check_blacklist()
             pass
         except exceptions.TokenError as e:
+            print(e)
             raise e
             pass
 

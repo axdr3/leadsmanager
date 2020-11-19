@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getLeads, deleteLead } from "../../actions/leads";
+import Lead from "./Lead";
 
 function Leads(props) {
   const dispatch = useDispatch();
@@ -27,8 +28,8 @@ function Leads(props) {
           </button>
         </form>
       </div>
-      <table className="table table-striped">
-        <thead>
+      <table className="table table-bordered table-hover">
+        <thead className="thead-dark">
           <tr>
             <th>ID</th>
             <th>Name</th>
@@ -39,35 +40,7 @@ function Leads(props) {
         </thead>
         <tbody>
           {leads.map((lead, index) => (
-            <tr key={lead.id}>
-              <td>{lead.id}</td>
-              <td>{lead.name}</td>
-              <td>{lead.email}</td>
-              <td>{lead.message}</td>
-              <td>
-                <div
-                  className="btn-group"
-                  role="group"
-                  aria-label="Lead Actions"
-                >
-                  <button className="btn btn-sm btn-success" onClick="">
-                    View
-                  </button>
-                  <button
-                    className="btn btn-sm btn-warning"
-                    onClick="{() => dispatch(deleteLead(lead.id))}"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => dispatch(deleteLead(lead.id))}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
+            <Lead lead={lead} key={index} index={index} dispatch={dispatch} />
           ))}
         </tbody>
       </table>
