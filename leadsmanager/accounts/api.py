@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, exceptions
 from rest_framework.response import Response
 
 # from knox.models import AuthToken
@@ -30,8 +30,14 @@ class LoginAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
         user_serializer = UserSerializer(user, context=self.get_serializer_context())
-        # token = AuthToken.objects.create(user=user)[1]
-        refresh = RefreshToken.for_user(user)
+        try:
+            refresh = RefreshToken.for_user(user)
+            refresh.check_blacklist()
+            pass
+        except exceptions.TokenError as e:
+            raise e
+            pass
+
         return Response(
             {
                 "user": user_serializer.data,
