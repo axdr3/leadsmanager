@@ -13,8 +13,8 @@ function Leads(props) {
   }, [dispatch]);
 
   return (
-    <React.Fragment>
-      <h2>Leads</h2>
+    <div className="d-flex flex-column justify-content-center border">
+      <h1 className="display-5 text-center mt-5">Leads</h1>
       <table className="table table-striped">
         <thead>
           <tr>
@@ -44,7 +44,7 @@ function Leads(props) {
           ))}
         </tbody>
       </table>
-    </React.Fragment>
+    </div>
   );
 }
 

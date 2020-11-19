@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../actions/auth";
 
@@ -25,11 +25,15 @@ function Header(props) {
     <ul className="navbar-nav ml-auto d-flex flex-row">
       <li className="nav-item text-light">
         <small>Hello,</small>
-        <br /> {user ? user.username : "Could not load username"}
+        <br /> {user ? user.username : "..."}
       </li>
       <li className="nav-item">
         <button
-          onClick={() => dispatch(logout())}
+          onClick={() => {
+            dispatch(logout());
+            window.location.href = "/";
+            // return <Redirect to="/" />;
+          }}
           className="nav-link btn btn-info btn-sm text-light"
         >
           Logout

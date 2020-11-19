@@ -25,9 +25,11 @@ function Alerts(props) {
   useEffect(() => {
     if (message.leadDeleted) alert.success(message.leadDeleted);
     if (message.leadAdded) alert.success(message.leadAdded);
-    // register errors
+    // register errors and messages
     if (message.passwordsNotMatch) alert.error(message.passwordsNotMatch);
+    if (message.registerSuccess) alert.success(message.registerSuccess);
   }, [message, alert]);
+
   return <React.Fragment></React.Fragment>;
 }
 

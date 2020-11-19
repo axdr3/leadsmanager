@@ -41,7 +41,7 @@ function App(props) {
           <React.Fragment>
             <Header />
             <Alerts />
-            <div className="d-flex flex-column container-sm">
+            <div className="container-sm">
               <Switch>
                 <PrivateRoute exact path="/" component={Dashboard} />
                 <Route exact path="/login" component={Login} />

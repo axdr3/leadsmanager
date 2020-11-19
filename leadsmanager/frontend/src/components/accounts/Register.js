@@ -23,6 +23,7 @@ function Register(props) {
         password,
       };
       dispatch(registerUser(newUser));
+      window.location.href = "/#/login/";
     }
   };
   const onChange = (event) => {

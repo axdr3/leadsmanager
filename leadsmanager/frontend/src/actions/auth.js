@@ -1,5 +1,5 @@
 import { axiosInstance } from "../axiosApi";
-import { returnErrors } from "./messages";
+import { returnErrors, createMessage } from "./messages";
 
 import {
   USER_LOADING,
@@ -73,12 +73,13 @@ export const registerUser = ({ username, email, password }) => (dispatch) => {
   const body = JSON.stringify({ username, email, password });
 
   axiosInstance
-    .post("/auth/register/", body)
+    .post("/auth/register/", body, config)
     .then((response) => {
       dispatch({
         type: REGISTER_SUCCESS,
         payload: response.data,
       });
+      dispatch(createMessage({ registerSuccess: "Successfully registered" }));
     })
     .catch((error) => {
       dispatch(returnErrors(error.response.data, error.response.status));
@@ -95,7 +96,6 @@ export const logout = () => (dispatch, getState) => {
   axiosInstance
     .post("/auth/logout/", { refresh_token: getState().auth.refresh_token })
     .then((response) => {
-      console.log(response.data);
       dispatch({
         type: LOGOUT_SUCCESS,
       });
