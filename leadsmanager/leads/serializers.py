@@ -5,6 +5,9 @@ from leads.models import Lead
 
 
 class LeadSerializer(serializers.ModelSerializer):
+    # owner = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Lead
         fields = "__all__"
+
