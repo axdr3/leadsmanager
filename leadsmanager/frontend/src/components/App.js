@@ -28,6 +28,9 @@ const alertOptions = {
   timeout: 3000,
   position: "middle",
   transition: transitions.SCALE,
+  containerStyle: {
+    zIndex: 100000,
+  },
 };
 
 function App(props) {

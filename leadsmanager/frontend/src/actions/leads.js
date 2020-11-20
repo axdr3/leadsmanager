@@ -31,6 +31,7 @@ export const deleteLead = (id) => (dispatch, getState) => {
 // ADD_LEAD
 
 export const addLead = (lead) => (dispatch, getState) => {
+  console.log(lead);
   axiosInstance
     .post("/leads/", lead, tokenConfig(getState))
     .then((response) => {

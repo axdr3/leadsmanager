@@ -1,50 +1,80 @@
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Modal from "@material-ui/core/Modal";
 import { useDispatch, useSelector } from "react-redux";
-
+import { InfoModalSmall } from "../layout/Modals";
 import { addLead } from "../../actions/leads";
 
-function Form(props) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const dispatch = useDispatch();
-  const errors = useSelector((state) => state.errors);
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
 
-  const onChange = (e) => {
-    // this.setState({ [e.target.name]: e.target.value })
-    switch (e.target.name) {
-      case "name":
-        setName(e.target.value);
-        return;
-      case "email":
-        setEmail(e.target.value);
-        return;
-      case "message":
-        setMessage(e.target.value);
-        return;
-      default:
-        return;
-    }
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
+}
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    position: "absolute",
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
+
+const initialState = {
+  name: "",
+  email: "",
+  message: "",
+};
+
+const reducer = (state, action) => {
+  if (action.type === "reset") {
+    return initialState;
+  }
+
+  const result = { ...state };
+  result[action.type] = action.value;
+  return result;
+};
+
+function Form(props) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [showModal, setShowModal] = useState(false);
+  const dispatchToBackEnd = useDispatch();
+
+  // Modal
+  const classes = useStyles();
+  // getModalStyle is not a pure function, we roll the style only on the first render
+  const [modalStyle] = useState(getModalStyle);
+
+  const handleOpen = () => {
+    setShowModal(true);
   };
 
-  // useEffect(() => {setName(document.getElementsByName)}, [name])
+  const handleClose = () => {
+    setShowModal(false);
+  };
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    dispatch({ type: name, value }); // reducer to set values
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    const lead = { name, email, message };
-    dispatch(addLead(lead)); // send to backend
-    console.log(errors);
-    if (!errors.status) {
-      setName("");
-      setEmail("");
-      setMessage("");
-    }
+    dispatchToBackEnd(addLead(state)); // send to backend
+    dispatch({ type: "reset" }); // reducer to reset
   };
 
-  return (
+  const form = (
     <div className="card card-body mt-4 mb-4">
       <h1 className="display-5 text-center">Add Lead</h1>
-      <form onSubmit={onSubmit}>
+      <form id="lead-form" onSubmit={onSubmit}>
         <div className="form-group">
           <label>Name</label>
           <input
@@ -52,7 +82,7 @@ function Form(props) {
             type="text"
             name="name"
             onChange={onChange}
-            value={name}
+            value={state.name}
           />
         </div>
         <div className="form-group">
@@ -62,7 +92,7 @@ function Form(props) {
             type="email"
             name="email"
             onChange={onChange}
-            value={email}
+            value={state.email}
           />
         </div>
         <div className="form-group">
@@ -72,7 +102,7 @@ function Form(props) {
             type="text"
             name="message"
             onChange={onChange}
-            value={message}
+            value={state.message}
           />
         </div>
         <div className="form-group">
@@ -82,6 +112,25 @@ function Form(props) {
         </div>
       </form>
     </div>
+  );
+
+  return (
+    <React.Fragment>
+      <button className="btn btn-success btn-block" onClick={handleOpen}>
+        Add Lead +
+      </button>
+      <Modal
+        open={showModal}
+        onClose={handleClose}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+      >
+        <div style={modalStyle} className={classes.paper}>
+          {form}
+        </div>
+      </Modal>
+      )
+    </React.Fragment>
   );
 }
 

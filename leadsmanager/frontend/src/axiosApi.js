@@ -32,10 +32,10 @@ const addInterceptors = (store) => {
       }
 
       if (
-        error.response.data.code === "token_not_valid" &&
+        error.response.code === "token_not_valid" &&
         error.response.status === 401 &&
         error.response.statusText === "Unauthorized" &&
-        error.response.data.details !== "Token is blacklisted"
+        error.response.details !== "Token is blacklisted"
       ) {
         const refreshToken = localStorage.getItem("refresh_token");
 
