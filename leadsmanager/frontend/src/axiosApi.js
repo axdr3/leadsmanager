@@ -1,5 +1,4 @@
 import axios from "axios";
-// import store from "./store";
 import {
   LOGOUT_SUCCESS,
   TOKEN_REFRESHED,
@@ -24,7 +23,8 @@ const addInterceptors = (store) => {
       // Prevent infinite loops early
       if (
         error.response.status === 401 &&
-        originalRequest.url === "http://127.0.0.1:8000/api/token/refresh/"
+        originalRequest.url === "http://127.0.0.1:8000/api/token/refresh/" &&
+        error.response.data.details === "Token is blacklisted"
       ) {
         window.location.href = "#/login/";
         store.dispatch({ type: AUTH_ERROR });
@@ -32,24 +32,11 @@ const addInterceptors = (store) => {
       }
 
       if (
-        error.response.code === "token_not_valid" &&
+        error.response.data.code === "token_not_valid" &&
         error.response.status === 401 &&
-        error.response.statusText === "Unauthorized" &&
-        error.response.details !== "Token is blacklisted"
+        error.response.statusText === "Unauthorized"
       ) {
         const refreshToken = localStorage.getItem("refresh_token");
-
-        // verify refresh token
-
-        // axiosInstance
-        //   .post("/token/verify/", { token: refreshToken })
-        //   .then((response) => {
-        //     // token valid
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //     return Promise.reject(error);
-        //   });
 
         if (refreshToken && refreshToken !== undefined) {
           const tokenParts = JSON.parse(atob(refreshToken.split(".")[1]));
@@ -76,8 +63,6 @@ const addInterceptors = (store) => {
               })
               .catch((error) => {
                 console.log("refresh error", error);
-                // localStorage.removeItem("refresh_token");
-                // localStorage.removeItem("access_token");
                 store.dispatch({ type: LOGOUT_SUCCESS });
                 return Promise.reject(error);
               });
