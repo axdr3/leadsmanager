@@ -61,6 +61,7 @@ export default function (state = initialState, action) {
         refresh_token: null,
         isAuthenticated: false,
         isLoading: false,
+        user: null,
       };
     case TOKEN_REFRESHED:
       localStorage.setItem("access_token", action.payload.access);

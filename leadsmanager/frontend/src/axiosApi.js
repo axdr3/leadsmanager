@@ -1,6 +1,11 @@
 import axios from "axios";
 // import store from "./store";
-import { AUTH_ERROR, TOKEN_REFRESHED, TOKEN_EXPIRED } from "./actions/types";
+import {
+  LOGOUT_SUCCESS,
+  TOKEN_REFRESHED,
+  TOKEN_EXPIRED,
+  AUTH_ERROR,
+} from "./actions/types";
 const axiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/",
   timeout: 5000,
@@ -15,22 +20,37 @@ const addInterceptors = (store) => {
     (response) => response,
     (error) => {
       const originalRequest = error.config;
-      // const { dispatch } = store;
+      console.log(error.response.data);
       // Prevent infinite loops early
       if (
         error.response.status === 401 &&
         originalRequest.url === "http://127.0.0.1:8000/api/token/refresh/"
       ) {
         window.location.href = "#/login/";
+        store.dispatch({ type: AUTH_ERROR });
         return Promise.reject(error);
       }
 
       if (
         error.response.data.code === "token_not_valid" &&
         error.response.status === 401 &&
-        error.response.statusText === "Unauthorized"
+        error.response.statusText === "Unauthorized" &&
+        error.response.data.details !== "Token is blacklisted"
       ) {
         const refreshToken = localStorage.getItem("refresh_token");
+
+        // verify refresh token
+
+        // axiosInstance
+        //   .post("/token/verify/", { token: refreshToken })
+        //   .then((response) => {
+        //     // token valid
+        //   })
+        //   .catch((error) => {
+        //     console.log(error);
+        //     return Promise.reject(error);
+        //   });
+
         if (refreshToken && refreshToken !== undefined) {
           const tokenParts = JSON.parse(atob(refreshToken.split(".")[1]));
           console.log("tokenparts", tokenParts);
@@ -43,8 +63,6 @@ const addInterceptors = (store) => {
             return axiosInstance
               .post("/token/refresh/", { refresh: refreshToken })
               .then((response) => {
-                // localStorage.setItem("access_token", response.data.access);
-                // localStorage.setItem("refresh_token", response.data.refresh);
                 console.log("tokenrefresh", response.data);
                 store.dispatch({
                   type: TOKEN_REFRESHED,
@@ -58,7 +76,9 @@ const addInterceptors = (store) => {
               })
               .catch((error) => {
                 console.log("refresh error", error);
-                store.dispatch({ type: AUTH_ERROR });
+                // localStorage.removeItem("refresh_token");
+                // localStorage.removeItem("access_token");
+                store.dispatch({ type: LOGOUT_SUCCESS });
                 return Promise.reject(error);
               });
           } else {
@@ -69,11 +89,13 @@ const addInterceptors = (store) => {
           }
         } else {
           console.log("Refresh token not available.");
+          store.dispatch({ type: AUTH_ERROR });
           window.location.href = "/#/login/";
         }
       }
 
       // specific error handling done elsewhere
+      store.dispatch({ type: AUTH_ERROR });
       return Promise.reject(error);
     }
   );

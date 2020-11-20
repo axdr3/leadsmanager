@@ -18,17 +18,16 @@ export default function (state = initialState, action) {
         leads: state.leads.filter((lead) => lead.id !== action.payload),
       };
     case EDIT_LEAD:
+      // Find index, swap with new lead and overwrite
       const index = state.leads.findIndex(
         (lead) => lead.id === action.payload.id
       );
       let arr = state.leads;
       arr[index] = { ...action.payload };
       state.leads = arr;
-      console.log("arr", arr);
-      console.log("state.leads", state.leads);
       return {
         ...state,
-        leads: arr,
+        leads: state.leads,
       };
     case ADD_LEAD:
       return {

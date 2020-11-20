@@ -1,13 +1,16 @@
-from rest_framework import generics, permissions, status, exceptions
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
 # from knox.models import AuthToken
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
 
 
 # Register API
 class RegisterAPI(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
@@ -20,6 +23,8 @@ class RegisterAPI(generics.GenericAPIView):
 
 # Login API
 class LoginAPI(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
@@ -30,11 +35,14 @@ class LoginAPI(generics.GenericAPIView):
         try:
             refresh = RefreshToken.for_user(user)
             refresh.check_blacklist()
+            # refresh.access_token.check_blacklist()
             pass
-        except exceptions.TokenError as e:
+        except Exception as e:
             print(e)
             raise e
-            pass
+            return Response(
+                status=status.HTTP_412_PRECONDITION_FAILED, exception=str(e)
+            )
 
         return Response(
             {

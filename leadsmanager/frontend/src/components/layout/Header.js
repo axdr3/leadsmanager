@@ -31,8 +31,6 @@ function Header(props) {
         <button
           onClick={() => {
             dispatch(logout());
-            window.location.href = "/";
-            // return <Redirect to="/" />;
           }}
           className="nav-link btn btn-info btn-sm text-light"
         >
@@ -44,7 +42,7 @@ function Header(props) {
 
   return (
     <header>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="container-sm navbar navbar-expand-lg navbar-dark bg-dark">
         <Link to="/" className="navbar-brand">
           Leads Manager <span className="sr-only">(current)</span>
         </Link>

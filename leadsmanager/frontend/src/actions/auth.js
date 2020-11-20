@@ -91,17 +91,19 @@ export const registerUser = ({ username, email, password }) => (dispatch) => {
 
 export const logout = () => (dispatch, getState) => {
   // User Loading
-  dispatch({ type: USER_LOADING });
+  // dispatch({ type: USER_LOADING });
 
   axiosInstance
     .post("/auth/logout/", { refresh_token: getState().auth.refresh_token })
     .then((response) => {
+      console.log("logout success", response.data);
       dispatch({
         type: LOGOUT_SUCCESS,
       });
       axiosInstance.defaults.headers["Authorization"] = null;
     })
     .catch((error) => {
+      console.log(error);
       dispatch(returnErrors(error.response.data, error.response.status));
       // dispatch({ type: AUTH_ERROR });
     });
