@@ -101,6 +101,9 @@ def test_edit_lead(api_client):
     response = client.put(
         "/api/leads/1/", data=json.dumps({**payload}), content_type="application/json"
     )
+    print(response.data)
     assert response.status_code == 200
     assert user.leads.count() == 1
     assert user.leads.first().email == payload["email"]
+    assert user.leads.first().name == payload["name"]
+    assert user.leads.first().message == payload["message"]

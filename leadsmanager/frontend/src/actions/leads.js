@@ -1,7 +1,7 @@
 import { createMessage, returnErrors } from "./messages";
 import { axiosInstance } from "../axiosApi";
 import { tokenConfig } from "./auth";
-import { GET_LEADS, DELETE_LEAD, ADD_LEAD } from "./types";
+import { GET_LEADS, DELETE_LEAD, ADD_LEAD, EDIT_LEAD } from "./types";
 
 // dispatch is async request
 // GET_LEADS
@@ -36,6 +36,20 @@ export const addLead = (lead) => (dispatch, getState) => {
     .then((response) => {
       dispatch(createMessage({ leadAdded: "Lead Added" }));
       dispatch({ type: ADD_LEAD, payload: response.data });
+    })
+    .catch((error) =>
+      dispatch(returnErrors(error.response.data, error.response.status))
+    );
+};
+
+// EDIT_LEAD
+
+export const editLead = (id, lead) => (dispatch, getState) => {
+  axiosInstance
+    .put(`/leads/${id}/`, lead, tokenConfig(getState))
+    .then((response) => {
+      dispatch(createMessage({ leadAdded: "Lead Edited" }));
+      dispatch({ type: EDIT_LEAD, payload: response.data });
     })
     .catch((error) =>
       dispatch(returnErrors(error.response.data, error.response.status))

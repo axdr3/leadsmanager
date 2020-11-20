@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 // import { useDispatch } from "react-redux";
-import { deleteLead } from "../../actions/leads";
-import Edit from "./Edit";
+import { deleteLead, editLead, getLeads } from "../../actions/leads";
 
 function Lead(props) {
-  const { lead, dispatch } = props;
+  const { lead, dispatch, setLeadsUpdated } = props;
   // const dispatch = useDispatch();
   const [editMode, setEditMode] = useState(false);
   const msgMaxLength = 20;
@@ -12,7 +11,6 @@ function Lead(props) {
   const [email, setEmail] = useState(lead.email);
   const [message, setMessage] = useState(lead.message);
 
-  // useEffect(() => {}, [editMode]);
   const handleChange = (e) => {
     // this.setState({ [e.target.name]: e.target.value })
     switch (e.target.name) {
@@ -37,10 +35,20 @@ function Lead(props) {
   const editModeLayout = (
     <React.Fragment>
       <td>
-        <input type="text" defaultValue={name} onChange={handleChange}></input>
+        <input
+          type="text"
+          name="name"
+          defaultValue={name}
+          onChange={handleChange}
+        ></input>
       </td>
       <td>
-        <input type="text" defaultValue={email} onChange={handleChange}></input>
+        <input
+          type="text"
+          name="email"
+          defaultValue={email}
+          onChange={handleChange}
+        ></input>
       </td>
       <td>
         {message.length > msgMaxLength
@@ -51,7 +59,13 @@ function Lead(props) {
         <div className="btn-group" role="group" aria-label="Lead Actions">
           <button
             className="btn btn-sm btn-warning"
-            // onClick="{() => dispatch(deleteLead(lead.id))}"
+            onClick={() => {
+              const editedLead = { name, email, message };
+              console.log(editedLead);
+              dispatch(editLead(lead.id, editedLead));
+              setEditMode(!editMode);
+              setLeadsUpdated(true);
+            }}
           >
             Finish editing lead
           </button>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getLeads, deleteLead } from "../../actions/leads";
 import Lead from "./Lead";
@@ -6,12 +6,17 @@ import Lead from "./Lead";
 function Leads(props) {
   const dispatch = useDispatch();
   const leads = useSelector((state) => state.leads.leads);
+  // const [newLeads, setNewLeads] = useState(leads);
+  const [leadsUpdated, setLeadsUpdated] = useState(true);
   useEffect(() => {
     function dispatchLeads() {
       dispatch(getLeads());
     }
-    dispatchLeads();
-  }, [dispatch]);
+    if (leadsUpdated) {
+      dispatchLeads();
+      setLeadsUpdated(false);
+    }
+  }, [dispatch, leadsUpdated]);
 
   return (
     <div className="d-flex flex-column justify-content-center border mt-5">
@@ -40,7 +45,13 @@ function Leads(props) {
         </thead>
         <tbody>
           {leads.map((lead, index) => (
-            <Lead lead={lead} key={index} index={index} dispatch={dispatch} />
+            <Lead
+              lead={lead}
+              key={index}
+              index={index}
+              dispatch={dispatch}
+              setLeadsUpdated={setLeadsUpdated}
+            />
           ))}
         </tbody>
       </table>
