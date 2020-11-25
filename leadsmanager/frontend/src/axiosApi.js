@@ -22,10 +22,11 @@ const addInterceptors = (store) => {
       console.log(error.response.data);
       // Prevent infinite loops early
       if (
-        error.response.status === 401 &&
-        originalRequest.url === "http://127.0.0.1:8000/api/token/refresh/" &&
-        error.response.data.details === "Token is blacklisted"
+        error.response.data.code === "token_not_valid" &&
+        // originalRequest.url === "http://127.0.0.1:8000/api/token/refresh/" &&
+        error.response.data.detail === "Token is blacklisted"
       ) {
+        console.log("Passei", error.response.data.detail);
         window.location.href = "#/login/";
         store.dispatch({ type: AUTH_ERROR });
         return Promise.reject(error);
@@ -38,7 +39,7 @@ const addInterceptors = (store) => {
       ) {
         const refreshToken = localStorage.getItem("refresh_token");
 
-        if (refreshToken && refreshToken !== undefined) {
+        if (refreshToken) {
           const tokenParts = JSON.parse(atob(refreshToken.split(".")[1]));
           console.log("tokenparts", tokenParts);
           // exp date in token is expressed in seconds, while now() returns milliseconds:
@@ -46,7 +47,6 @@ const addInterceptors = (store) => {
           console.log(tokenParts.exp);
 
           if (tokenParts.exp > now) {
-            // store.dispatch({ type: USER_LOADING });
             return axiosInstance
               .post("/token/refresh/", { refresh: refreshToken })
               .then((response) => {

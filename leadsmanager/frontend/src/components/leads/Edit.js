@@ -7,7 +7,7 @@ function Edit(props) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const errors = useSelector((state) => state.errors);
+  // const errors = useSelector((state) => state.errors);
 
   const onChange = (e) => {
     switch (e.target.name) {

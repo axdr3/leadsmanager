@@ -2,7 +2,6 @@ import React, { useState, useReducer } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import { useDispatch, useSelector } from "react-redux";
-import { InfoModalSmall } from "../layout/Modals";
 import { addLead } from "../../actions/leads";
 
 function getModalStyle() {
@@ -129,7 +128,6 @@ function Form(props) {
           {form}
         </div>
       </Modal>
-      )
     </React.Fragment>
   );
 }
