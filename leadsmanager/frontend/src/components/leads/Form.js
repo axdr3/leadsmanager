@@ -33,13 +33,17 @@ const initialState = {
 };
 
 const reducer = (state, action) => {
-  if (action.type === "reset") {
-    return initialState;
-  }
+  switch (action.type) {
+    case "reset":
+      return initialState;
+    case "memoized-reset":
+      return action.initialState;
 
-  const result = { ...state };
-  result[action.type] = action.value;
-  return result;
+    default:
+      const result = { ...state };
+      result[action.type] = action.value;
+      return result;
+  }
 };
 
 function Form(props) {

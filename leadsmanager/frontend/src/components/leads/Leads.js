@@ -6,18 +6,18 @@ import Lead from "./Lead";
 function Leads(props) {
   const dispatch = useDispatch();
   const leads = useSelector((state) => state.leads.leads);
-  const [leadsUpdated, setLeadsUpdated] = useState(false);
+  const [leadsDidUpdate, setLeadsDidUpdate] = useState(false);
 
   const [search, setSearch] = useState("");
   const [ordering, setOrdering] = useState({ direction: -1, by: "id" });
   const params = useRef(""); // so it doesn't rerender after use
 
   useEffect(() => {
-    if (!leadsUpdated) {
+    if (!leadsDidUpdate) {
       dispatch(getLeads());
-      setLeadsUpdated(true);
+      setLeadsDidUpdate(true);
     }
-  }, [dispatch, leadsUpdated]);
+  }, [dispatch, leadsDidUpdate]);
 
   useEffect(() => {
     const newParams = new URLSearchParams({
@@ -28,7 +28,7 @@ function Leads(props) {
     if (newParams.values !== params.values) {
       params.current = newParams;
       dispatch(getLeads("?" + params.current.toString()));
-      setLeadsUpdated(true);
+      setLeadsDidUpdate(true);
     }
   }, [dispatch, search, ordering]);
 
@@ -100,8 +100,8 @@ function Leads(props) {
               lead={lead}
               key={index}
               index={index}
-              dispatchToBackend={dispatch}
-              setLeadsUpdated={setLeadsUpdated}
+              storeDispatch={dispatch}
+              setLeadsDidUpdate={setLeadsDidUpdate}
             />
           ))}
         </tbody>

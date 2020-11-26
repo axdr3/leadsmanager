@@ -4,7 +4,7 @@ import { deleteLead, editLead } from "../../actions/leads";
 import { reducer } from "./Form";
 
 function Lead(props) {
-  const { lead, dispatchToBackend, setLeadsUpdated } = props;
+  const { lead, storeDispatch, setLeadsDidUpdate } = props;
   const initialState = useMemo(
     () => ({
       name: lead.name,
@@ -56,10 +56,10 @@ function Lead(props) {
             className="btn btn-sm btn-warning"
             onClick={() => {
               const editedLead = { ...state };
-              dispatchToBackend(editLead(lead.id, editedLead));
+              storeDispatch(editLead(lead.id, editedLead));
               dispatch({ type: state });
               setEditMode(!editMode);
-              setLeadsUpdated(true);
+              setLeadsDidUpdate(true);
             }}
           >
             Finish editing lead
@@ -67,7 +67,7 @@ function Lead(props) {
           <button
             className="btn btn-sm btn-danger"
             onClick={() => {
-              dispatch({ type: "reset" });
+              dispatch({ type: "memoized-reset", initialState });
               setEditMode(!editMode);
             }}
           >
@@ -99,7 +99,7 @@ function Lead(props) {
               </button>
               <button
                 className="btn btn-sm btn-danger"
-                onClick={() => dispatchToBackend(deleteLead(lead.id))}
+                onClick={() => storeDispatch(deleteLead(lead.id))}
               >
                 Delete
               </button>
