@@ -1,9 +1,31 @@
-import React, { Component } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Modal from "@material-ui/core/Modal";
-import PropTypes from "prop-types";
 
-function getModalStyle() {
+export class SmallModalFormStyle {
+  getModalStyle() {
+    const top = 50;
+    const left = 50;
+
+    return {
+      top: `${top}%`,
+      left: `${left}%`,
+      transform: `translate(-${top}%, -${left}%)`,
+    };
+  }
+  useStyles() {
+    return makeStyles((theme) => ({
+      paper: {
+        position: "absolute",
+        width: 400,
+        backgroundColor: theme.palette.background.paper,
+        border: "2px solid #000",
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+      },
+    }));
+  }
+}
+
+export function getSmallFormStyle() {
   const top = 50;
   const left = 50;
 
@@ -14,7 +36,7 @@ function getModalStyle() {
   };
 }
 
-const useStyles = makeStyles((theme) => ({
+export const useSmallFormStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
     width: 400,
@@ -24,40 +46,3 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 4, 3),
   },
 }));
-
-export function InfoModalSmall(props) {
-  const { info, show, setShow } = props;
-  const classes = useStyles();
-  // getModalStyle is not a pure function, we roll the style only on the first render
-  const [modalStyle] = React.useState(getModalStyle);
-  // const [open, setOpen] = React.useState(true);
-
-  const handleOpen = () => {
-    setShow(true);
-  };
-
-  const handleClose = () => {
-    setShow(false);
-  };
-
-  const body = (
-    <div style={modalStyle} className={classes.paper}>
-      {info}
-      {console.log("info")}
-    </div>
-  );
-
-  return (
-    <Modal
-      open={show}
-      onClose={handleClose}
-      aria-labelledby="simple-modal-title"
-      aria-describedby="simple-modal-description"
-    >
-      {body}
-    </Modal>
-  );
-}
-// InfoModalSmall.propTypes = {
-//   info: PropTypes.element.isRequired,
-// };

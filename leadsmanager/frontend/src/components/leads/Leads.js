@@ -1,22 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getLeads, deleteLead } from "../../actions/leads";
+import { getLeads } from "../../actions/leads";
 import Lead from "./Lead";
 
 function Leads(props) {
   const dispatch = useDispatch();
   const leads = useSelector((state) => state.leads.leads);
-  // const [newLeads, setNewLeads] = useState(leads);
-  const [leadsUpdated, setLeadsUpdated] = useState(true);
+  const [leadsUpdated, setLeadsUpdated] = useState(false);
+
+  const [search, setSearch] = useState("");
+  const [ordering, setOrdering] = useState({ direction: -1, by: "id" });
+  const params = useRef(""); // so it doesn't rerender after use
+
   useEffect(() => {
-    function dispatchLeads() {
+    if (!leadsUpdated) {
       dispatch(getLeads());
-    }
-    if (leadsUpdated) {
-      dispatchLeads();
-      setLeadsUpdated(false);
+      setLeadsUpdated(true);
     }
   }, [dispatch, leadsUpdated]);
+
+  useEffect(() => {
+    const newParams = new URLSearchParams({
+      search: search,
+      ordering: (ordering.direction > 0 ? "" : "-").concat(ordering.by),
+    });
+
+    if (newParams.values !== params.values) {
+      params.current = newParams;
+      dispatch(getLeads("?" + params.current.toString()));
+      setLeadsUpdated(true);
+    }
+  }, [dispatch, search, ordering]);
 
   return (
     <div className="d-flex flex-column justify-content-center border mt-5">
@@ -27,6 +41,10 @@ function Leads(props) {
             className="form-control mr-sm-2"
             type="text"
             placeholder="Search"
+            onChange={(e) => {
+              // e.preventDefault();
+              setSearch(e.target.value);
+            }}
           />
           <button className="btn btn-secondary my-2 my-sm-0" type="submit">
             Search
@@ -34,11 +52,44 @@ function Leads(props) {
         </form>
       </div>
       <table className="table table-bordered table-hover">
-        <thead className="thead-dark">
+        <thead className="thead-light">
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
+            <th>
+              <span
+                className="btn"
+                onClick={() => {
+                  setOrdering({ direction: ordering.direction * -1, by: "id" });
+                }}
+              >
+                ID
+              </span>
+            </th>
+            <th>
+              <span
+                className="btn"
+                onClick={() => {
+                  setOrdering({
+                    direction: ordering.direction * -1,
+                    by: "name",
+                  });
+                }}
+              >
+                Name
+              </span>
+            </th>
+            <th>
+              <span
+                className="btn"
+                onClick={() => {
+                  setOrdering({
+                    direction: ordering.direction * -1,
+                    by: "email",
+                  });
+                }}
+              >
+                Email
+              </span>
+            </th>
             <th>Message</th>
             <th></th>
           </tr>
@@ -49,7 +100,7 @@ function Leads(props) {
               lead={lead}
               key={index}
               index={index}
-              dispatch={dispatch}
+              dispatchToBackend={dispatch}
               setLeadsUpdated={setLeadsUpdated}
             />
           ))}

@@ -13,3 +13,6 @@ class Lead(models.Model):
     owner = models.ForeignKey(
         User, related_name="leads", on_delete=models.CASCADE, null=True
     )
+
+    class Meta:
+        ordering = ["-id"]

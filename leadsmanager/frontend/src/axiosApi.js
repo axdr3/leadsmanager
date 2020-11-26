@@ -80,7 +80,7 @@ const addInterceptors = (store) => {
       }
 
       // specific error handling done elsewhere
-      store.dispatch({ type: AUTH_ERROR });
+      // store.dispatch({ type: AUTH_ERROR });
       return Promise.reject(error);
     }
   );

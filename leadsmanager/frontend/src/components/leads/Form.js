@@ -1,7 +1,7 @@
 import React, { useState, useReducer } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addLead } from "../../actions/leads";
 
 function getModalStyle() {
@@ -67,7 +67,7 @@ function Form(props) {
   const onSubmit = (e) => {
     e.preventDefault();
     dispatchToBackEnd(addLead(state)); // send to backend
-    dispatch({ type: "reset" }); // reducer to reset
+    dispatch({ type: "reset" }); // send to reducer for reset
   };
 
   const form = (
@@ -132,4 +132,4 @@ function Form(props) {
   );
 }
 
-export default Form;
+export { Form, reducer };

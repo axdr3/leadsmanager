@@ -1,11 +1,10 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import Form from "./Form";
+import { useSelector } from "react-redux";
+import { Form } from "./Form";
 import Leads from "./Leads";
 
 export default function Dashboard() {
   const auth = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
 
   const guestDashboard = <h2>Welcome</h2>;
   return (

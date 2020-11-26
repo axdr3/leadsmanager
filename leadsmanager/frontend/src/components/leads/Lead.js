@@ -1,31 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useReducer, useMemo } from "react";
 // import { useDispatch } from "react-redux";
-import { deleteLead, editLead, getLeads } from "../../actions/leads";
+import { deleteLead, editLead } from "../../actions/leads";
+import { reducer } from "./Form";
 
 function Lead(props) {
-  const { lead, dispatch, setLeadsUpdated } = props;
-  // const dispatch = useDispatch();
+  const { lead, dispatchToBackend, setLeadsUpdated } = props;
+  const initialState = useMemo(
+    () => ({
+      name: lead.name,
+      email: lead.email,
+      message: lead.message,
+    }),
+    [lead]
+  );
+
   const [editMode, setEditMode] = useState(false);
   const msgMaxLength = 20;
-  const [name, setName] = useState(lead.name);
-  const [email, setEmail] = useState(lead.email);
-  const [message, setMessage] = useState(lead.message);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const handleChange = (e) => {
-    // this.setState({ [e.target.name]: e.target.value })
-    switch (e.target.name) {
-      case "name":
-        setName(e.target.value);
-        return;
-      case "email":
-        setEmail(e.target.value);
-        return;
-      case "message":
-        setMessage(e.target.value);
-        return;
-      default:
-        return;
-    }
+    const { name, value } = e.target;
+    dispatch({ type: name, value }); // reducer to set values
   };
   const handleEdit = (e) => {
     e.preventDefault();
@@ -38,7 +33,7 @@ function Lead(props) {
         <input
           type="text"
           name="name"
-          defaultValue={name}
+          defaultValue={state.name}
           onChange={handleChange}
         ></input>
       </td>
@@ -46,28 +41,37 @@ function Lead(props) {
         <input
           type="text"
           name="email"
-          defaultValue={email}
+          defaultValue={state.email}
           onChange={handleChange}
         ></input>
       </td>
       <td>
-        {message.length > msgMaxLength
-          ? `${message.substring(0, msgMaxLength)}...` // make link to view full msg in an edit modal for both
-          : message}
+        {state.message.length > msgMaxLength
+          ? `${state.message.substring(0, msgMaxLength)}...` // make link to view full msg in an edit modal for both
+          : state.message}
       </td>
       <td>
         <div className="btn-group" role="group" aria-label="Lead Actions">
           <button
             className="btn btn-sm btn-warning"
             onClick={() => {
-              const editedLead = { name, email, message };
-              console.log(editedLead);
-              dispatch(editLead(lead.id, editedLead));
+              const editedLead = { ...state };
+              dispatchToBackend(editLead(lead.id, editedLead));
+              dispatch({ type: state });
               setEditMode(!editMode);
               setLeadsUpdated(true);
             }}
           >
             Finish editing lead
+          </button>
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={() => {
+              dispatch({ type: "reset" });
+              setEditMode(!editMode);
+            }}
+          >
+            Don't change
           </button>
         </div>
       </td>
@@ -90,15 +94,12 @@ function Lead(props) {
           </td>
           <td>
             <div className="btn-group" role="group" aria-label="Lead Actions">
-              {/* <button className="btn btn-sm btn-success" onClick="">
-            View
-          </button> */}
               <button className="btn btn-sm btn-warning" onClick={handleEdit}>
                 Edit
               </button>
               <button
                 className="btn btn-sm btn-danger"
-                onClick={() => dispatch(deleteLead(lead.id))}
+                onClick={() => dispatchToBackend(deleteLead(lead.id))}
               >
                 Delete
               </button>

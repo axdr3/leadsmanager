@@ -5,9 +5,10 @@ import { GET_LEADS, DELETE_LEAD, ADD_LEAD, EDIT_LEAD } from "./types";
 
 // dispatch is async request
 // GET_LEADS
-export const getLeads = () => (dispatch, getState) => {
+export const getLeads = (entries) => (dispatch, getState) => {
+  if (!entries) entries = "";
   axiosInstance
-    .get("/leads/", tokenConfig(getState))
+    .get(`/leads/${entries}`, tokenConfig(getState))
     .then((response) => {
       dispatch({ type: GET_LEADS, payload: response.data });
     })
@@ -16,6 +17,17 @@ export const getLeads = () => (dispatch, getState) => {
     );
 };
 
+// GET_LEADS
+export const getFilteredLeads = (entries) => (dispatch, getState) => {
+  axiosInstance
+    .get(`/leads/${entries}`, tokenConfig(getState))
+    .then((response) => {
+      dispatch({ type: GET_LEADS, payload: response.data });
+    })
+    .catch((error) =>
+      dispatch(returnErrors(error.response.data, error.response.status))
+    );
+};
 // DELETE_LEAD
 
 export const deleteLead = (id) => (dispatch, getState) => {
@@ -31,7 +43,6 @@ export const deleteLead = (id) => (dispatch, getState) => {
 // ADD_LEAD
 
 export const addLead = (lead) => (dispatch, getState) => {
-  console.log(lead);
   axiosInstance
     .post("/leads/", lead, tokenConfig(getState))
     .then((response) => {

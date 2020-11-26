@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Provider as AlertProvider, transitions } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
